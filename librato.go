@@ -1,10 +1,10 @@
 package librato
 
 import (
+	"errors"
 	"fmt"
-	"http"
 	"io"
-	"os"
+	"net/http"
 )
 
 const (
@@ -17,7 +17,7 @@ func (q *QueryResponse) String() string {
 	return fmt.Sprintf("{Found:%d Total:%d Offset:%d Length:%d}", q.Found, q.Total, q.Offset, q.Length)
 }
 
-func (met *Metrics) request(method string, url string, body io.Reader) (*http.Response, os.Error) {
+func (met *Metrics) request(method string, url string, body io.Reader) (*http.Response, error) {
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err
@@ -30,11 +30,11 @@ func (met *Metrics) request(method string, url string, body io.Reader) (*http.Re
 	return res, err
 }
 
-func (met *Metrics) get(url string) (*http.Response, os.Error) {
+func (met *Metrics) get(url string) (*http.Response, error) {
 	return met.request("GET", url, nil)
 }
 
-func (met *Metrics) post(url string, body io.Reader) os.Error {
+func (met *Metrics) post(url string, body io.Reader) error {
 	res, err := met.request("POST", url, body)
 	if err != nil {
 		return err
@@ -42,7 +42,7 @@ func (met *Metrics) post(url string, body io.Reader) os.Error {
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
-		return os.NewError(res.Status)
+		return errors.New(res.Status)
 	}
 
 	return nil

@@ -2,8 +2,7 @@ package librato
 
 import (
 	"bytes"
-	"json"
-	"os"
+	"encoding/json"
 )
 
 type Metric struct {
@@ -22,7 +21,7 @@ type Metrics struct {
 	Token    string
 }
 
-func (met *Metrics) SendMetrics(metrics *MetricsFormat) os.Error {
+func (met *Metrics) SendMetrics(metrics *MetricsFormat) error {
 	if len(metrics.Counters) == 0 && len(metrics.Gauges) == 0 {
 		return nil
 	}

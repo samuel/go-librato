@@ -1,9 +1,9 @@
 package librato
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
-	"json"
-	"os"
 )
 
 type User struct {
@@ -33,14 +33,14 @@ func (r *UsersResponse) String() string {
 	return fmt.Sprintf("{Query:%s Users:%s}", r.Query.String(), r.Users)
 }
 
-func (met *Metrics) GetUsers(reference string, email string) (*UsersResponse, os.Error) {
+func (met *Metrics) GetUsers(reference string, email string) (*UsersResponse, error) {
 	res, err := met.get(librato_metrics_users_api_url)
 	if err != nil {
 		return nil, err
 	}
 
 	if res.StatusCode != 200 {
-		return nil, os.NewError(res.Status)
+		return nil, errors.New(res.Status)
 	}
 
 	var users UsersResponse

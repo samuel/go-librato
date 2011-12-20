@@ -1,9 +1,9 @@
 package librato
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
-	"json"
-	"os"
 )
 
 type Service struct {
@@ -26,14 +26,14 @@ func (r *ServicesResponse) String() string {
 	return fmt.Sprintf("{Query:%s Services:%s}", r.Query.String(), r.Services)
 }
 
-func (met *Metrics) GetServices() (*ServicesResponse, os.Error) {
+func (met *Metrics) GetServices() (*ServicesResponse, error) {
 	res, err := met.get(librato_metrics_services_api_url)
 	if err != nil {
 		return nil, err
 	}
 
 	if res.StatusCode != 200 {
-		return nil, os.NewError(res.Status)
+		return nil, errors.New(res.Status)
 	}
 
 	var svc ServicesResponse
