@@ -27,7 +27,7 @@ func (r *ServicesResponse) String() string {
 }
 
 func (met *Metrics) GetServices() (*ServicesResponse, error) {
-	res, err := met.get(librato_metrics_services_api_url)
+	res, err := met.get(metricsServicesApiUrl)
 	if err != nil {
 		return nil, err
 	}

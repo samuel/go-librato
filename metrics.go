@@ -31,5 +31,5 @@ func (met *Metrics) SendMetrics(metrics *MetricsFormat) error {
 		return err
 	}
 
-	return met.post(librato_metrics_api_url, bytes.NewBuffer(js))
+	return met.post(metricsApiUrl, bytes.NewBuffer(js))
 }

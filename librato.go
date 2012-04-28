@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	librato_metrics_api_url          = "https://metrics-api.librato.com/v1/metrics.json"
-	librato_metrics_users_api_url    = "https://api.librato.com/v1/users.json"
-	librato_metrics_services_api_url = "https://metrics-api.librato.com/v1/services.json"
+	metricsApiUrl         = "https://metrics-api.librato.com/v1/metrics.json"
+	metricsUsersApiUrl    = "https://api.librato.com/v1/users.json"
+	metricsServicesApiUrl = "https://metrics-api.librato.com/v1/services.json"
 )
 
 func (q *QueryResponse) String() string {

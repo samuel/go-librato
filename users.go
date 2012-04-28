@@ -34,7 +34,7 @@ func (r *UsersResponse) String() string {
 }
 
 func (met *Metrics) GetUsers(reference string, email string) (*UsersResponse, error) {
-	res, err := met.get(librato_metrics_users_api_url)
+	res, err := met.get(metricsUsersApiUrl)
 	if err != nil {
 		return nil, err
 	}
