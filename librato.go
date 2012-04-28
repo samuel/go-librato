@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	metricsApiUrl         = "https://metrics-api.librato.com/v1/metrics.json"
-	metricsUsersApiUrl    = "https://api.librato.com/v1/users.json"
-	metricsServicesApiUrl = "https://metrics-api.librato.com/v1/services.json"
+	metricsApiUrl         = "https://metrics-api.librato.com/v1/metrics"
+	metricsUsersApiUrl    = "https://api.librato.com/v1/users"
+	metricsServicesApiUrl = "https://metrics-api.librato.com/v1/services"
+	userAgent             = "go-librato/0.5"
 )
 
 func (q *QueryResponse) String() string {
@@ -25,6 +26,7 @@ func (met *Metrics) request(method string, url string, body io.Reader) (*http.Re
 	if method == "POST" {
 		req.Header.Set("Content-Type", "application/json")
 	}
+	req.Header.Set("User-Agent", userAgent)
 	req.SetBasicAuth(met.Username, met.Token)
 	res, err := http.DefaultClient.Do(req)
 	return res, err
