@@ -3,7 +3,6 @@ package librato
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 )
 
 type Service struct {
@@ -18,14 +17,8 @@ type ServicesResponse struct {
 	Services []Service     `json:"service"`
 }
 
-func (s *Service) String() string {
-	return fmt.Sprintf("{ID:%d Type:%s Settings:%s Title:%s}", s.ID, s.Type, s.Settings, s.Title)
-}
-
-func (r *ServicesResponse) String() string {
-	return fmt.Sprintf("{Query:%s Services:%s}", r.Query.String(), r.Services)
-}
-
+// Return all services created by the user.
+// http://dev.librato.com/v1/get/services
 func (met *Metrics) GetServices() (*ServicesResponse, error) {
 	res, err := met.get(metricsServicesApiUrl)
 	if err != nil {

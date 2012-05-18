@@ -3,7 +3,6 @@ package librato
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 )
 
 type User struct {
@@ -25,14 +24,8 @@ type UsersResponse struct {
 	Users []User        `json:"users"`
 }
 
-func (u *User) String() string {
-	return fmt.Sprintf("{ID:%d Email:%s}", u.ID, u.Email)
-}
-
-func (r *UsersResponse) String() string {
-	return fmt.Sprintf("{Query:%s Users:%s}", r.Query.String(), r.Users)
-}
-
+// Return all users managed by the partner.
+// http://dev.librato.com/v1/get/users
 func (met *Metrics) GetUsers(reference string, email string) (*UsersResponse, error) {
 	res, err := met.get(metricsUsersApiUrl)
 	if err != nil {
