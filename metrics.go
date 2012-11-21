@@ -16,6 +16,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -27,19 +28,47 @@ const (
 )
 
 type Metric struct {
-	Name   string  `json:"name"`
-	Value  float64 `json:"value"`
-	Source string  `json:"source,omitempty"`
+	Name        string  `json:"name"`
+	Value       float64 `json:"value"`
+	MeasureTime int64   `json:"measure_time,omitempty"`
+	Source      string  `json:"source,omitempty"`
+}
+
+type Gauge struct {
+	Name        string  `json:"name"`
+	MeasureTime int64   `json:"measure_time,omitempty"`
+	Source      string  `json:"source,omitempty"`
+	Count       uint64  `json:"count"`
+	Sum         float64 `json:"sum"`
+	Max         float64 `json:"max,omitempty"`
+	Min         float64 `json:"min,omitempty"`
+	SumSquares  float64 `json:"sum_squares,omitempty"`
 }
 
 type MetricsFormat struct {
-	Counters []Metric `json:"counters,omitempty"`
-	Gauges   []Metric `json:"gauges,omitempty"`
+	MeasureTime int64         `json:"measure_time,omitempty"`
+	Source      string        `json:"source,omitempty"`
+	Counters    []Metric      `json:"counters,omitempty"`
+	Gauges      []interface{} `json:"gauges,omitempty"`
 }
 
 type Metrics struct {
 	Username string
 	Token    string
+}
+
+type ErrTypes struct {
+	Params  map[string]interface{} `json:"params"`
+	Request []string               `json:"request"`
+	System  []string               `json:"system"`
+}
+
+type ErrResponse struct {
+	Errors ErrTypes `json:"errors"`
+}
+
+func (e *ErrResponse) Error() string {
+	return fmt.Sprintf("{Err %+v}", e.Errors)
 }
 
 // Crete and submit measurements for new or existing metrics.
@@ -83,6 +112,13 @@ func (met *Metrics) post(url string, body io.Reader) error {
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
+		b := make([]byte, 1024)
+		if n, err := res.Body.Read(b); err == nil {
+			errRes := &ErrResponse{}
+			if err := json.Unmarshal(b[:n], errRes); err == nil {
+				return errRes
+			}
+		}
 		return errors.New(res.Status)
 	}
 
