@@ -1,8 +1,7 @@
 package librato
 
 import (
-	"encoding/json"
-	"errors"
+	"net/url"
 )
 
 type Service struct {
@@ -13,24 +12,13 @@ type Service struct {
 }
 
 type ServicesResponse struct {
-	Query    QueryResponse `json:"query"`
-	Services []Service     `json:"service"`
+	Query    *QueryResponse `json:"query"`
+	Services []*Service     `json:"service"`
 }
 
-// Return all services created by the user.
+// GetServices returns all services created by the user.
 // http://dev.librato.com/v1/get/services
-func (met *Metrics) GetServices() (*ServicesResponse, error) {
-	res, err := met.get(metricsServicesApiUrl)
-	if err != nil {
-		return nil, err
-	}
-
-	if res.StatusCode != 200 {
-		return nil, errors.New(res.Status)
-	}
-
+func (cli *Client) GetServices(offset, length int, orderby string, sort Sort) (*ServicesResponse, error) {
 	var svc ServicesResponse
-	jdec := json.NewDecoder(res.Body)
-	err = jdec.Decode(&svc)
-	return &svc, err
+	return &svc, cli.request("GET", servicesURL+"?"+pageParams(url.Values{}, offset, length, orderby, sort).Encode(), nil, &svc)
 }
