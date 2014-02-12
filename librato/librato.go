@@ -3,10 +3,10 @@ Package librato is a library for Librato's metrics service API.
 
 Example:
 
-	metrics = &librato.Metrics{"login@email.com", "token"}
-	metrics := &librato.MetricsFormat{
-		Counters: []librato.Metrics{librato.Metric{"name", 123, "source"}},
-		Gauges: []librato.Metrics{},
+	metrics = &librato.Client{"login@email.com", "token"}
+	metrics := &librato.Metrics{
+		Counters: []librato.Metric{librato.Metric{"name", 123, "source"}},
+		Gauges: []librato.Gauge{},
 	}
 	metrics.SendMetrics(metrics)
 */
