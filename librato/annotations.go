@@ -5,7 +5,9 @@ import (
 )
 
 type Link struct {
-	Rel   string `json:"rel"` // Defines the relationship of the link. A link's relationship must be unique within a single annotation event.
+	// Rel defines the relationship of the link. A link's relationship must
+	// be unique within a single annotation event.
+	Rel   string `json:"rel"`
 	Href  string `json:"href"`
 	Label string `json:"label,omitempty"`
 }
@@ -19,8 +21,13 @@ type Annotation struct {
 	Source      string `json:"source,omitempty"`
 	Description string `json:"description,omitempty"`
 	Links       []Link `json:"links,omitempty"`
-	StartTime   int64  `json:"start_time,omitempty"` // The unix timestamp indicating the the time at which the event referenced by this annotation started. By default this is set to the current time if not specified.
-	EndTime     int64  `json:"end_time,omitempty"`   // The unix timestamp indicating the the time at which the event referenced by this annotation ended. For events that have a duration, this is a useful way to annotate the duration of the event. This parameter is optional and defaults to null if not set.
+	// StartTime is the unix timestamp indicating the the time at which the event referenced
+	// by this annotation started. By default this is set to the current time if not specified.
+	StartTime int64 `json:"start_time,omitempty"`
+	// Endtime is the unix timestamp indicating the the time at which the event referenced
+	// by this annotation ended. For events that have a duration, this is a useful way to
+	// annotate the duration of the event. This parameter is optional and defaults to null if not set.
+	EndTime int64 `json:"end_time,omitempty"`
 }
 
 type AnnotationStream struct {
@@ -35,15 +42,16 @@ type AnnotationStreamsResponse struct {
 	Annotations []*AnnotationStream `json:"annotations"`
 }
 
-func (cli *Client) PostAnnotation(name string, ann *Annotation) (int64, error) {
-	if err := cli.request("POST", annotationsURL+"/"+name, ann, ann); err != nil {
+// PostAnnotation posts an event to an annotation stream returning its ID
+func (cli *Client) PostAnnotation(streamName string, ann *Annotation) (int64, error) {
+	if err := cli.request("POST", annotationsURL+"/"+streamName, ann, ann); err != nil {
 		return 0, err
 	}
 	return ann.Id, nil
 }
 
 // GetAnnotationStreams returns a list of annotation streams (not the annotations themselves)
-func (cli *Client) GetAnnotationStreams(name string, offset, length int, orderby string, sort Sort) (*AnnotationStreamsResponse, error) {
+func (cli *Client) GetAnnotationStreams(name string, page *Pagination) (*AnnotationStreamsResponse, error) {
 	params := url.Values{}
 
 	if name != "" {
@@ -51,5 +59,5 @@ func (cli *Client) GetAnnotationStreams(name string, offset, length int, orderby
 	}
 
 	var ann AnnotationStreamsResponse
-	return &ann, cli.request("GET", annotationsURL+"?"+pageParams(params, offset, length, orderby, sort).Encode(), nil, &ann)
+	return &ann, cli.request("GET", annotationsURL+"?"+page.toParams(params).Encode(), nil, &ann)
 }

@@ -32,7 +32,7 @@ func TestPostAnnotation(t *testing.T) {
 
 func TestGetAnnotationStreams(t *testing.T) {
 	cli := testClient(t)
-	res, err := cli.GetAnnotationStreams("", 0, 0, "", Ascending)
+	res, err := cli.GetAnnotationStreams("", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -42,10 +42,52 @@ const (
 )
 
 type QueryResponse struct {
-	Found  int `json:"found"`
-	Total  int `json:"total"`
-	Offset int `json:"offset"`
+	// Length is the maximum number of resources to return in the response.
 	Length int `json:"length"`
+	// Offset is the index into the entire result set at which the current
+	// response begins. E.g. if a total of 20 resources match the query,
+	// and the offset is 5, the response begins with the sixth resource.
+	Offset int `json:"offset"`
+	// Total is the total number of resources owned by the user.
+	Total int `json:"total"`
+	// Found is the number of resources owned by the user that satisfy
+	// the specified query parameters. found will be less than or equal
+	// to total. Additionally if length is less than found, the response
+	// is a subset of the resources matching the specified query parameters.
+	Found int `json:"found"`
+}
+
+// Pagination sets the pagination options on get requests
+type Pagination struct {
+	// Offset specifies how many results to skip for the first
+	// returned result. Defaults to 0.
+	Offset int
+	// Length specifies how many resources should be returned. The
+	// maximum permissible (and the default) length is 100.
+	Length int
+	// Orderby the specified attribute. Permissible set of orderby
+	// attributes and the default value varies with resource type.
+	Orderby string
+	// Sort is the order in which the results should be ordered. Permissible
+	// values are asc (ascending) and desc (descending). Defaults to asc.
+	Sort Sort
+}
+
+type TimeInterval struct {
+	// StarTime is the unix timestamp indicating the start time of the desired interval.
+	StartTime int64 `json:"start_time,omitempty"`
+	// EndTime is the unix timestamp indicating the end time of the desired
+	// interval. If left unspecified it defaults to the current time.
+	EndTime int64 `json:"end_time,omitempty"`
+	// Count is the number of measurements desired. When specified as
+	// N in conjunction with StartTime, the response contains the first N
+	// measurements after StartTime. When specified as N in conjunction with
+	// EndTime, the response contains the last N measurements before EndTime.
+	Count int `json:"count,omitempty"`
+	// A resolution for the response as measured in seconds. If the original
+	// measurements were reported at a higher resolution than specified in
+	// the request, the response contains averaged measurements.
+	Resolution int `json:"resolution,omitempty"`
 }
 
 type ErrTypes struct {
@@ -114,18 +156,24 @@ func (cli *Client) request(method string, url string, req, res interface{}) erro
 	return nil
 }
 
-func pageParams(params url.Values, offset, length int, orderby string, sort Sort) url.Values {
-	if offset > 0 {
-		params.Set("offset", strconv.Itoa(offset))
+func (page *Pagination) toParams(params url.Values) url.Values {
+	if params == nil {
+		params = url.Values{}
 	}
-	if length > 0 {
-		params.Set("length", strconv.Itoa(length))
+	if page == nil {
+		return params
 	}
-	if orderby != "" {
-		params.Set("orderby", orderby)
+	if page.Offset > 0 {
+		params.Set("offset", strconv.Itoa(page.Offset))
 	}
-	if sort != "" {
-		params.Set("sort", string(sort))
+	if page.Length > 0 {
+		params.Set("length", strconv.Itoa(page.Length))
+	}
+	if page.Orderby != "" {
+		params.Set("orderby", page.Orderby)
+	}
+	if page.Sort != "" {
+		params.Set("sort", string(page.Sort))
 	}
 	return params
 }

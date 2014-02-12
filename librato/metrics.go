@@ -22,7 +22,7 @@ type Metrics struct {
 	MeasureTime int64         `json:"measure_time,omitempty"`
 	Source      string        `json:"source,omitempty"`
 	Counters    []Metric      `json:"counters,omitempty"`
-	Gauges      []interface{} `json:"gauges,omitempty"` // Values can be either instances of Metric or Gauge
+	Gauges      []interface{} `json:"gauges,omitempty"` // Values can be either Metric or Gauge
 }
 
 // PostMetrics submits measurements for new or existing metrics.
