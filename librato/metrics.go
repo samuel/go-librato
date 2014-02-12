@@ -25,9 +25,9 @@ type Metrics struct {
 	Gauges      []interface{} `json:"gauges,omitempty"` // Values can be either instances of Metric or Gauge
 }
 
-// SendMetrics submits measurements for new or existing metrics.
+// PostMetrics submits measurements for new or existing metrics.
 // http://dev.librato.com/v1/post/metrics
-func (cli *Client) SendMetrics(metrics *Metrics) error {
+func (cli *Client) PostMetrics(metrics *Metrics) error {
 	if len(metrics.Counters) == 0 && len(metrics.Gauges) == 0 {
 		return nil
 	}
