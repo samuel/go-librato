@@ -1,5 +1,11 @@
 package librato
 
+import (
+	"net/url"
+	"strconv"
+	"time"
+)
+
 type Metric struct {
 	Name        string  `json:"name"`
 	Value       float64 `json:"value"`
@@ -25,6 +31,44 @@ type Metrics struct {
 	Gauges      []interface{} `json:"gauges,omitempty"` // Values can be either Metric or Gauge
 }
 
+type ComposeResult struct {
+	Compose      string         `json:"compose"`
+	Measurements []*Measurement `json:"measurements"`
+	Resolution   int            `json:"resolution"`
+	Query        struct {
+		NextTime *int64 `json:"next_time"`
+	} `json:"query"`
+}
+
+type Measurement struct {
+	Series []Value     `json:"series"`
+	Metric *MetricInfo `json:"metric"`
+	Source struct {
+		Name string `json:"name"`
+	} `json:"source"`
+	Query struct {
+		Metric string `json:"metric"`
+		Source string `json:"source"`
+	} `json:"query"`
+	Period *int `json:"period,omitempty"`
+	// Timeshift *string `json:"timeshift,omitempty"` // TODO: don't know the type
+}
+
+type MetricInfo struct {
+	Name        string            `json:"name"`
+	DisplayName *string           `json:"display_name,omitempty"`
+	Type        string            `json:"type"`
+	Attributes  map[string]string `json:"attributes"`
+	Description *string           `json:"description,omitempty"`
+	Period      *int              `json:"period,omitempty"`
+	// SourceLag   *string           `json:"source_lag"` // TODO: don't know the type
+}
+
+type Value struct {
+	Value       float64 `json:"value"`
+	MeasureTime int64   `json:"measure_time"`
+}
+
 // PostMetrics submits measurements for new or existing metrics.
 // http://dev.librato.com/v1/post/metrics
 func (cli *Client) PostMetrics(metrics *Metrics) error {
@@ -32,4 +76,23 @@ func (cli *Client) PostMetrics(metrics *Metrics) error {
 		return nil
 	}
 	return cli.request("POST", metricsURL, metrics, nil)
+}
+
+func (cli *Client) QueryComposite(compose string, resolution int, startTime, endTime time.Time, count int) (*ComposeResult, error) {
+	v := url.Values{
+		"compose":    []string{compose},
+		"resolution": []string{strconv.Itoa(resolution)},
+		"start_time": []string{strconv.FormatInt(startTime.Unix(), 10)},
+	}
+	if !endTime.IsZero() {
+		v.Set("end_time", strconv.FormatInt(endTime.Unix(), 10))
+	}
+	if count > 0 {
+		v.Set("count", strconv.Itoa(count))
+	}
+	var res ComposeResult
+	if err := cli.request("GET", metricsURL+"?"+v.Encode(), nil, &res); err != nil {
+		return nil, err
+	}
+	return &res, nil
 }
