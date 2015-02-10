@@ -55,12 +55,12 @@ type Measurement struct {
 }
 
 type MetricInfo struct {
-	Name        string            `json:"name"`
-	DisplayName *string           `json:"display_name,omitempty"`
-	Type        string            `json:"type"`
-	Attributes  map[string]string `json:"attributes"`
-	Description *string           `json:"description,omitempty"`
-	Period      *int              `json:"period,omitempty"`
+	Name        string                 `json:"name"`
+	DisplayName *string                `json:"display_name,omitempty"`
+	Type        string                 `json:"type"`
+	Attributes  map[string]interface{} `json:"attributes"`
+	Description *string                `json:"description,omitempty"`
+	Period      *int                   `json:"period,omitempty"`
 	// SourceLag   *string           `json:"source_lag"` // TODO: don't know the type
 }
 

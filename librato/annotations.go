@@ -31,10 +31,10 @@ type Annotation struct {
 }
 
 type AnnotationStream struct {
-	Name        string            `json:"name"`
-	DisplayName string            `json:"display_name,omitempty"`
-	Type        string            `json:"type"`
-	Attributes  map[string]string `json:"attributes"` // created_by_ua
+	Name        string                 `json:"name"`
+	DisplayName string                 `json:"display_name,omitempty"`
+	Type        string                 `json:"type"`
+	Attributes  map[string]interface{} `json:"attributes"` // created_by_ua
 }
 
 type AnnotationStreamsResponse struct {
