@@ -34,6 +34,7 @@ const (
 	usersURL       = "https://metrics-api.librato.com/v1/users"
 )
 
+// Sort is a sort direction, ascending or descending
 type Sort string
 
 const (
@@ -96,6 +97,7 @@ type ErrTypes struct {
 	System  []string               `json:"system"`
 }
 
+// ErrResponse is an error returned as a response from Librato API
 type ErrResponse struct {
 	StatusCode int
 	Errors     ErrTypes `json:"errors"`
@@ -112,7 +114,7 @@ type Client struct {
 
 func (cli *Client) request(method string, url string, req, res interface{}) error {
 	if method == "GET" && req != nil {
-		errors.New("librato: req must be nil for GET requests")
+		return errors.New("librato: req must be nil for GET requests")
 	}
 
 	var body io.Reader

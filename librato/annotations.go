@@ -16,7 +16,7 @@ type Link struct {
 // typically occur at non-uniform times, yet may impact the behavior of
 // monitored metrics.
 type Annotation struct {
-	Id          int64  `json:"id,omitempty"` // For responses. Do not include when posting.
+	ID          int64  `json:"id,omitempty"` // For responses. Do not include when posting.
 	Title       string `json:"title"`
 	Source      string `json:"source,omitempty"`
 	Description string `json:"description,omitempty"`
@@ -47,7 +47,7 @@ func (cli *Client) PostAnnotation(streamName string, ann *Annotation) (int64, er
 	if err := cli.request("POST", annotationsURL+"/"+streamName, ann, ann); err != nil {
 		return 0, err
 	}
-	return ann.Id, nil
+	return ann.ID, nil
 }
 
 // GetAnnotationStreams returns a list of annotation streams (not the annotations themselves)
