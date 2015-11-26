@@ -88,7 +88,7 @@ func TestAlertCRUD(t *testing.T) {
 	} else if id == 0 {
 		t.Fatal("Id is 0")
 	} else {
-		t.Logf("Post response", toJson(a))
+		t.Logf("Post response: %s", toJson(a))
 	}
 
 	ar, err := cli.GetAlerts(name, nil)
@@ -131,5 +131,9 @@ func TestAlertCRUD(t *testing.T) {
 	a2, err = cli.GetAlert(id)
 	if err == nil {
 		t.Fatalf("Expected an error")
+	}
+
+	if err := cli.DeleteMetric(metricName); err != nil {
+		t.Fatal(err)
 	}
 }
