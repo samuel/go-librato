@@ -1,6 +1,7 @@
 package librato
 
 import (
+	"encoding/json"
 	"os"
 	"testing"
 )
@@ -15,4 +16,12 @@ func testClient(t *testing.T) *Client {
 		Username: username,
 		Token:    token,
 	}
+}
+
+func toJson(o interface{}) string {
+	s, err := json.Marshal(o)
+	if err != nil {
+		return ""
+	}
+	return string(s)
 }
