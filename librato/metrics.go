@@ -1,6 +1,7 @@
 package librato
 
 import (
+	"errors"
 	"net/url"
 	"strconv"
 	"time"
@@ -95,4 +96,11 @@ func (cli *Client) QueryComposite(compose string, resolution int, startTime, end
 		return nil, err
 	}
 	return &res, nil
+}
+
+func (cli *Client) DeleteMetric(name string) error {
+	if len(name) == 0 {
+		return errors.New("Name cannot be empty")
+	}
+	return cli.request("DELETE", metricsURL+"/"+name, nil, nil)
 }

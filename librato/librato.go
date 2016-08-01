@@ -32,6 +32,7 @@ const (
 	metricsURL     = "https://metrics-api.librato.com/v1/metrics"
 	servicesURL    = "https://metrics-api.librato.com/v1/services"
 	usersURL       = "https://metrics-api.librato.com/v1/users"
+	alertsURL      = "https://metrics-api.librato.com/v1/alerts"
 )
 
 // Sort is a sort direction, ascending or descending
